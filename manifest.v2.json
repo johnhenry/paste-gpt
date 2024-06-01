@@ -21,5 +21,6 @@
   "host_permissions": [
     "https://chatgpt.com/*",
     "https://www.hackerrank.com/*"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
 }

@@ -10,6 +10,9 @@
   "chrome_url_overrides": {
     "newtab": "chrome_url_overrides/newtab.html"
   },
+  "action": {
+    "default_popup": "action/default_popup.html"
+  },
   "web_accessible_resources": [
     {
       "resources": [
