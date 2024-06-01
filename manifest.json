@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
-  "version": "1.0",
-  "name": "leet-answers",
-  "description": "An extension template using web technologies. This template includes a new tab override.",
+  "version": "0.0",
+  "name": "Paste GPT",
+  "description": "An extension to paste web content directly into Chat GPT",
   "icons": {
-    "16": "images/icons/16.png",
-    "32": "images/icons/32.png",
-    "48": "images/icons/48.png",
-    "64": "images/icons/64.png",
-    "128": "images/icons/128.png"
+    "16": "images/icons/logo_16.png",
+    "32": "images/icons/logo_32.png",
+    "48": "images/icons/logo_48.png",
+    "64": "images/icons/logo_64.png",
+    "128": "images/icons/logo_128.png"
   },
   "action": {
     "default_popup": "popup/index.html"
@@ -19,7 +19,6 @@
     "scripting"
   ],
   "host_permissions": [
-    "https://chatgpt.com/*",
-    "https://www.hackerrank.com/*"
+    "https://chatgpt.com/*"
   ]
 }

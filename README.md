@@ -1,4 +1,4 @@
-# leet-answers
+# Paste GPT
 
 > This project was bootstrapped using the Extension TypeScript template.
 
