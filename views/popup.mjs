@@ -1,3 +1,5 @@
+const DEFAULT_SELECTOR = "html";
+
 const newTabReady = async (options) => {
   const newTab = await chrome.tabs.create(options);
   const { id } = newTab;
@@ -26,6 +28,7 @@ const func = (selector = "html", html = false, all = false) =>
 const solve =
   (autorun = false) =>
   async () => {
+    document.getElementById("overlay").style.display = "flex";
     try {
       const [tab] = await chrome.tabs.query({
         active: true,
@@ -34,7 +37,7 @@ const solve =
       const result = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         args: [
-          document.getElementById("selector").value,
+          document.getElementById("selector").value || DEFAULT_SELECTOR,
           document.getElementById("use-html").checked,
           document.getElementById("get-all").checked,
         ],
@@ -44,9 +47,9 @@ const solve =
       const instruction = document.getElementById("instruction").value.trim();
       const instructionSet = Boolean(instruction);
       const prompt = instructionSet
-        ? `${instruction}:
-
-${data}`
+        ? instruction.indexOf("{content}") > -1
+          ? instruction.replace("{content}", data)
+          : `${instruction}:\n\n${data}`
         : data;
 
       const { id: newTabId } = await newTabReady({
@@ -56,7 +59,7 @@ ${data}`
       chrome.scripting.executeScript({
         // world: "MAIN",
         target: { tabId: newTabId },
-        args: [prompt, autorun],
+        args: [prompt, autorun && instructionSet],
         func: (prompt, autorun) => {
           const MIN_WAIT = 500;
           const set = (prompt, TEXT_AREA, CHAT_BUTTON) => {
@@ -117,3 +120,29 @@ const PASTE_BUTTON = document.getElementById("paste-button");
 PASTE_BUTTON.addEventListener("click", solve(false));
 const RUN_BUTTON = document.getElementById("run-button");
 RUN_BUTTON.addEventListener("click", solve(true));
+
+const INSTRUCTION_TEXTAREA = document.getElementById("instruction");
+
+const SELECT_PROMPTS = document.getElementById("prompts");
+SELECT_PROMPTS.addEventListener("change", () => {
+  INSTRUCTION_TEXTAREA.value = SELECT_PROMPTS.value;
+});
+try {
+  const response = await fetch("./prompts.json");
+  if (!response.ok) {
+    throw new Error("Network response was not ok " + response.statusText);
+  }
+  const data = await response.json();
+  data.prompts.forEach((item, index) => {
+    const option = document.createElement("option");
+    option.textContent = item.title;
+    option.value = item.prompt;
+    if (index === 0) {
+      option.selected = true;
+    }
+    SELECT_PROMPTS.appendChild(option);
+  });
+} catch (error) {
+  console.error("There was a problem with the fetch operation:", error);
+}
+SELECT_PROMPTS.dispatchEvent(new Event("change"));

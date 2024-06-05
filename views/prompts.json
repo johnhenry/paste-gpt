@@ -1,0 +1,16 @@
+{
+  "prompts": [
+    {
+      "title": "Summarize",
+      "prompt": "Please summarize the following content:\n\n{content}"
+    },
+    {
+      "title": "Solve",
+      "prompt": "Please solve the following problem:\n\n{content}"
+    },
+    {
+      "title": "(blank)",
+      "prompt": ""
+    }
+  ]
+}
