@@ -1,0 +1,35 @@
+<html lang="en">
+  <head>
+    <title>Paste GPT: Options</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="./options.css" />
+  </head>
+  <body>
+    <main>
+      <section>
+        <header>
+          <img src="../images/icons/logo_128.png" alt="logo" />
+          <h1>Paste GPT: Options</h1>
+        </header>
+        <form id="form-options">
+          <template id="template-prompt">
+            <fieldset>
+              <label> Title <input name="title" required /> </label>
+              <label>
+                Prompt <textarea name="prompt" required> </textarea>
+              </label>
+              <button class="button-removeprompt" type="button">×</button>
+            </fieldset>
+          </template>
+          <button id="button-appendprompt" type="button">+</button>
+          <button id="button-save" type="button" id="button-save">Save</button>
+          <button id="button-reset" type="button" id="button-reset">
+            Reset
+          </button>
+        </form>
+      </section>
+    </main>
+    <script type="module" src="./options.mjs"></script>
+  </body>
+</html>

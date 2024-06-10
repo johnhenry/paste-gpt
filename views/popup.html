@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Popup</title>
+    <link rel="stylesheet" href="./popup.css" media="screen" />
+  </head>
+  <body>
+    <main>
+      <h1>Paste GPT</h1>
+      <header>
+        <img src="../images/icons/logo_128.png" alt="logo" />
+        <form>
+          <label> Selector <input id="selector" placeholder="html" /> </label>
+          <label title="Select all instances of selector on page">
+            Select All
+            <input id="get-all" type="checkbox" title="Extract as HTML" />
+          </label>
+          <label title="Past full html and not jut chat gpt">
+            As HTML
+            <input id="use-html" type="checkbox" title="Extract as HTML" />
+          </label>
+        </form>
+      </header>
+
+      <label
+        ><a href="./options.html" target="_blank">Prompts</a>
+        <select title="prompts" id="prompts"></select>
+        <textarea id="instruction"></textarea>
+      </label>
+      <button id="paste-button" title="Paste text into chat GPT.">
+        📋 Paste into Chat GPT
+      </button>
+      <button id="run-button" title="Paste text into into chat GPT and run it.">
+        🚀 Run using Chat GPT
+      </button>
+    </main>
+    <section id="overlay">
+      <h1>Sending Content...</h1>
+      <p>Do not manually switch tabs.</p>
+    </section>
+  </body>
+  <script unsafe-inline src="./popup.mjs" type="module"></script>
+</html>

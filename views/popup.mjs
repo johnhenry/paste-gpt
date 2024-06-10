@@ -1,5 +1,9 @@
 const DEFAULT_SELECTOR = "html";
 
+const replace = (template, values) => {
+  return template.replace(/{(.*?)}/g, (match, token) => values[token] || match);
+};
+
 const newTabReady = async (options) => {
   const newTab = await chrome.tabs.create(options);
   const { id } = newTab;
@@ -43,14 +47,14 @@ const solve =
         ],
         func,
       });
-      const data = result[0].result;
+      const content = result[0].result.trim();
       const instruction = document.getElementById("instruction").value.trim();
-      const instructionSet = Boolean(instruction);
-      const prompt = instructionSet
-        ? instruction.indexOf("{content}") > -1
-          ? instruction.replace("{content}", data)
-          : `${instruction}:\n\n${data}`
-        : data;
+
+      const prompt =
+        replace(instruction, {
+          url: tab.url,
+          content: result[0].result,
+        }) || content;
 
       const { id: newTabId } = await newTabReady({
         url: "https://chatgpt.com",
@@ -59,7 +63,7 @@ const solve =
       chrome.scripting.executeScript({
         // world: "MAIN",
         target: { tabId: newTabId },
-        args: [prompt, autorun && instructionSet],
+        args: [prompt || defaultPrompt, autorun && prompt],
         func: (prompt, autorun) => {
           const MIN_WAIT = 500;
           const set = (prompt, TEXT_AREA, CHAT_BUTTON) => {
@@ -127,19 +131,27 @@ const SELECT_PROMPTS = document.getElementById("prompts");
 SELECT_PROMPTS.addEventListener("change", () => {
   INSTRUCTION_TEXTAREA.value = SELECT_PROMPTS.value;
 });
+
+const loadOptions = () => {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(
+      "options",
+      ({ options = DEFAULT_OPTIONS } = { options: DEFAULT_OPTIONS }) => {
+        resolve(options);
+      }
+    );
+  });
+};
 try {
-  const response = await fetch("./prompts.json");
-  if (!response.ok) {
-    throw new Error("Network response was not ok " + response.statusText);
-  }
-  const data = await response.json();
-  data.prompts.forEach((item, index) => {
+  const options = await loadOptions();
+  options.forEach((item, index) => {
     const option = document.createElement("option");
     option.textContent = item.title;
     option.value = item.prompt;
     if (index === 0) {
       option.selected = true;
     }
+    // option.selected = !index || null;
     SELECT_PROMPTS.appendChild(option);
   });
 } catch (error) {

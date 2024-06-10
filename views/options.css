@@ -1,0 +1,38 @@
+main {
+  display: flex;
+  align-items: start;
+  justify-content: space-evenly;
+  flex-direction: column;
+  @media (orientation: landscape) {
+    flex-direction: row;
+  }
+}
+dialog {
+  display: none;
+  place-content: center;
+  place-items: center;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  font-size: 2rem;
+}
+form {
+  fieldset {
+    width: 32rem;
+    border: none;
+    label {
+      display: flex;
+      flex-direction: column;
+      select {
+        height: 2rem;
+      }
+      textarea {
+        min-height: 4rem;
+      }
+    }
+  }
+}
