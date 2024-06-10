@@ -1,5 +1,7 @@
 const DEFAULT_SELECTOR = "html";
 
+import { DEFAULT_OPTIONS } from "./default-options.mjs";
+
 const replace = (template, values) => {
   return template.replace(/{(.*?)}/g, (match, token) => values[token] || match);
 };

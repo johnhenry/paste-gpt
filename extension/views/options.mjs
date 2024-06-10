@@ -1,28 +1,9 @@
+import { DEFAULT_OPTIONS } from "./default-options.mjs";
+
 const FORM_OPTIONS = document.getElementById("form-options");
 const BUTTON_SAVE = document.getElementById("button-save");
 const BUTTON_APPENDPROMPT = document.getElementById("button-appendprompt");
 const BUTTON_RESET = document.getElementById("button-reset");
-
-const DEFAULT_OPTIONS = [
-  {
-    title: "Summarize",
-    prompt:
-      "Please summarize the following content:\n\nurl: {url}\n\n{content}",
-  },
-  {
-    title: "Solve",
-    prompt: "Please solve the following problem:\n\n{content}",
-  },
-
-  {
-    title: "URL + Content",
-    prompt: "url: {url}\n{content}",
-  },
-  {
-    title: "Content",
-    prompt: "",
-  },
-];
 
 const populate = (element, options) => {
   for (const [k, v] of Object.entries(options)) {
