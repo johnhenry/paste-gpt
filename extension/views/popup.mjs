@@ -139,10 +139,10 @@ const solve =
       return chrome.scripting.unregisterContentScripts(scriptIds);
     }
   };
-const PASTE_BUTTON = document.getElementById("paste-button");
-PASTE_BUTTON.addEventListener("click", solve("chatgpt"));
-const RUN_BUTTON = document.getElementById("run-button");
-RUN_BUTTON.addEventListener("click", solve("claude"));
+const PASTE_BUTTON_CHATGPT = document.getElementById("paste-chatgpt");
+PASTE_BUTTON_CHATGPT.addEventListener("click", solve("chatgpt"));
+const PASTE_BUTTON_CLAUDEAI = document.getElementById("paste-claudeai");
+PASTE_BUTTON_CLAUDEAI.addEventListener("click", solve("claude"));
 
 const INSTRUCTION_TEXTAREA = document.getElementById("instruction");
 

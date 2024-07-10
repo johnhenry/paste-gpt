@@ -52,17 +52,40 @@ main {
     text-shadow: var(--text-shadow);
   }
   label,
+  select,
+  textarea,
   button,
+  input:not([type="checkbox"]) {
+    cursor: pointer;
+  }
+
+  label,
   select,
   textarea,
   input:not([type="checkbox"]) {
     width: 100%;
-    cursor: pointer;
   }
-  button,
+
+  fieldset {
+    width: 100%;
+  }
+
   select,
-  input {
+  input,
+  fieldset {
     padding: var(--gap-half);
+  }
+  fieldset {
+    display: flex;
+    align-items: center;
+    border: none;
+    font-size: 1rem;
+    > button {
+      padding: 0.25rem;
+      &:first-of-type {
+        margin-left: auto;
+      }
+    }
   }
 
   textarea {

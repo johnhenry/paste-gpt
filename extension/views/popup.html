@@ -29,12 +29,20 @@
         <select title="prompts" id="prompts"></select>
         <textarea id="instruction"></textarea>
       </label>
-      <button id="paste-button" title="Paste text into chat GPT.">
-        📋 Paste into Chat GPT
-      </button>
-      <button id="run-button" title="Paste text into into chat GPT and run it.">
-        📋 Paste into Claude AI
-      </button>
+      <fieldset>
+        Chat GPT:
+        <button id="paste-chatgpt" title="Paste text into chat GPT.">📋</button>
+      </fieldset>
+      <hr />
+      <fieldset>
+        Claude AI:
+        <button
+          id="paste-claudeai"
+          title="Paste text into into chat GPT and run it."
+        >
+          📋
+        </button>
+      </fieldset>
     </main>
     <section id="overlay">
       <h1>Sending Content...</h1>
