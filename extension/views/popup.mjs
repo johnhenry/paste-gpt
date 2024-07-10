@@ -32,7 +32,7 @@ const func = (selector = "html", html = false, all = false) =>
     : document.querySelector(selector)[html ? "innerHTML" : "innerText"];
 
 const solve =
-  (target = "chatgpt", run) =>
+  (target = "chatgpt", run = false) =>
   async () => {
     document.getElementById("overlay").style.display = "flex";
     try {
@@ -52,17 +52,18 @@ const solve =
       const content = result[0].result.trim();
       const instruction = document.getElementById("instruction").value.trim();
 
-      let url;
-      let selector;
+      const selector = {};
       switch (target) {
         case "claude":
-          url = "https://claude.ai/new";
-          selector = `[data-placeholder="How can Claude help you today?"]`;
+          selector.url = "https://claude.ai/new";
+          selector.textbox = `[data-placeholder="How can Claude help you today?"]`;
+          selector.button = `fieldset [aria-label="Write your prompt to Claude"]~div button`;
           break;
         case "chatgpt":
         default:
-          url = "https://chatgpt.com";
-          selector = "textarea";
+          selector.url = "https://chatgpt.com";
+          selector.textbox = "textarea";
+          selector.button = "main form button:only-of-type";
           break;
       }
 
@@ -72,7 +73,7 @@ const solve =
           content: result[0].result,
         }) || content;
       const { id: newTabId } = await newTabReady({
-        url,
+        url: selector.url,
         active: false,
       });
       chrome.scripting.executeScript({
@@ -104,7 +105,7 @@ const solve =
             });
           };
 
-          const set = (prompt, TEXT_AREA) => {
+          const set = async (prompt, TEXT_AREA) => {
             if (!prompt || !TEXT_AREA) {
               return;
             }
@@ -112,10 +113,8 @@ const solve =
               case "claude":
                 TEXT_AREA.textContent = prompt;
                 if (run) {
-                  const CHAT_BUTTON = document.querySelector(
-                    "main form button:only-of-type"
-                  );
-                  CHAT_BUTTON && CHAT_BUTTON.click();
+                  const button = await waitForSelector(selector.button);
+                  button.click();
                 }
                 break;
               case "chatgpt":
@@ -123,16 +122,14 @@ const solve =
                 TEXT_AREA.value = prompt;
                 TEXT_AREA.dispatchEvent(new Event("input", { bubbles: true }));
                 if (run) {
-                  // find button and click
-                  const CHAT_BUTTON = document.querySelector("fieldset button");
-                  CHAT_BUTTON && CHAT_BUTTON.click();
+                  const button = await waitForSelector(selector.button);
+                  button.click();
                 }
                 break;
             }
           };
           const loaded = async () => {
-            await waitForSelector(selector);
-            const TEXT_AREA = document.querySelector(selector);
+            const TEXT_AREA = await waitForSelector(selector.textbox);
             set(prompt, TEXT_AREA);
           };
           if (document.readyState === "complete") {
