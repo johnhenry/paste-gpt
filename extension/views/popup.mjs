@@ -32,7 +32,7 @@ const func = (selector = "html", html = false, all = false) =>
     : document.querySelector(selector)[html ? "innerHTML" : "innerText"];
 
 const solve =
-  (target = "chatgpt") =>
+  (target = "chatgpt", run) =>
   async () => {
     document.getElementById("overlay").style.display = "flex";
     try {
@@ -78,8 +78,8 @@ const solve =
       chrome.scripting.executeScript({
         // world: "MAIN",
         target: { tabId: newTabId },
-        args: [prompt || (defaultPrompt && prompt), target, selector],
-        func: (prompt, target, selector) => {
+        args: [prompt || (defaultPrompt && prompt), target, selector, run],
+        func: (prompt, target, selector, run) => {
           const waitForSelector = async (selector) => {
             return new Promise((resolve) => {
               const observer = new MutationObserver((mutationsList) => {
@@ -111,11 +111,17 @@ const solve =
             switch (target) {
               case "claude":
                 TEXT_AREA.textContent = prompt;
+                if (run) {
+                  // find button and click
+                }
                 break;
               case "chatgpt":
               default:
                 TEXT_AREA.value = prompt;
                 TEXT_AREA.dispatchEvent(new Event("input", { bubbles: true }));
+                if (run) {
+                  // find button and click
+                }
                 break;
             }
           };
@@ -141,8 +147,13 @@ const solve =
   };
 const PASTE_BUTTON_CHATGPT = document.getElementById("paste-chatgpt");
 PASTE_BUTTON_CHATGPT.addEventListener("click", solve("chatgpt"));
+const RUN_BUTTON_CHATGPT = document.getElementById("run-chatgpt");
+RUN_BUTTON_CHATGPT.addEventListener("click", solve("chatgpt", true));
+
 const PASTE_BUTTON_CLAUDEAI = document.getElementById("paste-claudeai");
 PASTE_BUTTON_CLAUDEAI.addEventListener("click", solve("claude"));
+const RUN_BUTTON_CLAUDEAI = document.getElementById("run-claudeai");
+RUN_BUTTON_CLAUDEAI.addEventListener("click", solve("claude", true));
 
 const INSTRUCTION_TEXTAREA = document.getElementById("instruction");
 

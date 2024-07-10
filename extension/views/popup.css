@@ -80,6 +80,7 @@ main {
     align-items: center;
     border: none;
     font-size: 1rem;
+    gap: 1rem;
     > button {
       padding: 0.25rem;
       &:first-of-type {
