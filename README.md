@@ -3,6 +3,6 @@
 Paste content directly into chat gpt
 
 ```shell
-cd extensions
+cd extension
 zip -r extension.zip *
 ```

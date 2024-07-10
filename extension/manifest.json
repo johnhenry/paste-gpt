@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "name": "Paste GPT",
   "description": "Paste web content directly into Chat GPT or Claude AI",
   "options_page": "views/options.html",

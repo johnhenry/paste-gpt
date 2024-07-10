@@ -1,0 +1,10 @@
+{
+  "name": "paste-gpt",
+  "description": "Paste content directly into Chat GPT or Open AI",
+  "scripts": {
+    "build": "zip -r extension.zip extension"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

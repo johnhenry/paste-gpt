@@ -112,7 +112,10 @@ const solve =
               case "claude":
                 TEXT_AREA.textContent = prompt;
                 if (run) {
-                  // find button and click
+                  const CHAT_BUTTON = document.querySelector(
+                    "main form button:only-of-type"
+                  );
+                  CHAT_BUTTON && CHAT_BUTTON.click();
                 }
                 break;
               case "chatgpt":
@@ -121,6 +124,8 @@ const solve =
                 TEXT_AREA.dispatchEvent(new Event("input", { bubbles: true }));
                 if (run) {
                   // find button and click
+                  const CHAT_BUTTON = document.querySelector("fieldset button");
+                  CHAT_BUTTON && CHAT_BUTTON.click();
                 }
                 break;
             }
