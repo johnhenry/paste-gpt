@@ -32,7 +32,7 @@ const func = (selector = "html", html = false, all = false) =>
     : document.querySelector(selector)[html ? "innerHTML" : "innerText"];
 
 const solve =
-  (autorun = false) =>
+  (target = "chatgpt") =>
   async () => {
     document.getElementById("overlay").style.display = "flex";
     try {
@@ -52,60 +52,77 @@ const solve =
       const content = result[0].result.trim();
       const instruction = document.getElementById("instruction").value.trim();
 
+      let url;
+      let selector;
+      switch (target) {
+        case "claude":
+          url = "https://claude.ai/new";
+          selector = `[data-placeholder="How can Claude help you today?"]`;
+          break;
+        case "chatgpt":
+        default:
+          url = "https://chatgpt.com";
+          selector = "textarea";
+          break;
+      }
+
       const prompt =
         replace(instruction, {
           url: tab.url,
           content: result[0].result,
         }) || content;
-
       const { id: newTabId } = await newTabReady({
-        url: "https://chatgpt.com",
+        url,
         active: false,
       });
       chrome.scripting.executeScript({
         // world: "MAIN",
         target: { tabId: newTabId },
-        args: [prompt || defaultPrompt, autorun && prompt],
-        func: (prompt, autorun) => {
-          const MIN_WAIT = 500;
-          const set = (prompt, TEXT_AREA, CHAT_BUTTON) => {
-            if (!prompt || !TEXT_AREA || !CHAT_BUTTON) {
-              return;
-            }
-            if (!TEXT_AREA) {
-              return;
-            }
-            // set prompt text
-            TEXT_AREA.value = prompt;
-            // dispatch input event to make button active
-            TEXT_AREA.dispatchEvent(new Event("input", { bubbles: true }));
-            // click button
-            if (autorun) {
-              setTimeout(() => {
-                if (!CHAT_BUTTON.disabled) {
-                  CHAT_BUTTON.click();
+        args: [prompt || (defaultPrompt && prompt), target, selector],
+        func: (prompt, target, selector) => {
+          const waitForSelector = async (selector) => {
+            return new Promise((resolve) => {
+              const observer = new MutationObserver((mutationsList) => {
+                for (const mutation of mutationsList) {
+                  if (
+                    mutation.type === "childList" &&
+                    mutation.addedNodes.length > 0
+                  ) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                      observer.disconnect();
+                      resolve(element);
+                    }
+                  }
                 }
-              }, MIN_WAIT + Math.random() * MIN_WAIT);
+              });
+
+              observer.observe(document.documentElement, {
+                childList: true,
+                subtree: true,
+              });
+            });
+          };
+
+          const set = (prompt, TEXT_AREA) => {
+            if (!prompt || !TEXT_AREA) {
+              return;
+            }
+            switch (target) {
+              case "claude":
+                TEXT_AREA.textContent = prompt;
+                break;
+              case "chatgpt":
+              default:
+                TEXT_AREA.value = prompt;
+                TEXT_AREA.dispatchEvent(new Event("input", { bubbles: true }));
+                break;
             }
           };
-          const closestCousins = (element, target) => {
-            let parent = document.querySelector(element)?.parentElement;
-            while (parent) {
-              let items;
-              if ((items = parent.querySelectorAll(target)).length) {
-                return items;
-              }
-              parent = parent.parentElement;
-            }
-            return document.querySelectorAll(null);
-          };
-          const loaded = () => {
-            const TEXT_AREA = document.querySelector("textarea");
-            const CHAT_BUTTON = closestCousins(
-              "textarea",
-              "button:only-of-type"
-            )[0];
-            set(prompt, TEXT_AREA, CHAT_BUTTON);
+          const loaded = async () => {
+            await waitForSelector(selector);
+            const TEXT_AREA = document.querySelector(selector);
+            set(prompt, TEXT_AREA);
           };
           if (document.readyState === "complete") {
             loaded();
@@ -123,9 +140,9 @@ const solve =
     }
   };
 const PASTE_BUTTON = document.getElementById("paste-button");
-PASTE_BUTTON.addEventListener("click", solve(false));
+PASTE_BUTTON.addEventListener("click", solve("chatgpt"));
 const RUN_BUTTON = document.getElementById("run-button");
-RUN_BUTTON.addEventListener("click", solve(true));
+RUN_BUTTON.addEventListener("click", solve("claude"));
 
 const INSTRUCTION_TEXTAREA = document.getElementById("instruction");
 

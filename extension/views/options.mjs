@@ -7,9 +7,7 @@ const BUTTON_RESET = document.getElementById("button-reset");
 
 const populate = (element, options) => {
   for (const [k, v] of Object.entries(options)) {
-    console.log(k, v);
     const target = element.querySelector(`[name=${k}]`);
-    console.log(target);
     if (target) {
       target.value = v || "";
     }
