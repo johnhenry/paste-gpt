@@ -9,9 +9,56 @@
     <main>
       <section>
         <header>
+          <h1>Paste GPT</h1>
           <img src="../images/icons/logo_128.png" alt="logo" />
-          <h1>Paste GPT: Options</h1>
+          <details>
+            <ul>
+              <li>
+                <a
+                  rel="noopener"
+                  href="https://chromewebstore.google.com/detail/paste-gpt/jblalfbaalffdkbdildjgmelmpmaignh"
+                  target="_blank"
+                  >Store Page</a
+                >
+              </li>
+              <li>
+                <a
+                  rel="noopener"
+                  href="https://github.com/johnhenry/paste-gpt"
+                  target="_blank"
+                  >Repository</a
+                >
+              </li>
+
+              <li>
+                <a
+                  rel="noopener"
+                  href="https://github.com/johnhenry/paste-gpt/blob/main/PRIVACY.md"
+                  target="_blank"
+                  >Privacy Policy</a
+                >
+              </li>
+            </ul>
+          </details>
         </header>
+        <h2>Prompts</h2>
+        <h3>Bracketed Keywords</h3>
+        Used bracketed keywords to inject infomation into prompts.
+        <ul>
+          <li>
+            {content} -- content of the page. Used bracketed keywords to inject
+            infomation into prompts.
+            <ul>
+              <li>
+                If this keyword is not included content is appended
+                <br />
+                to the end of the prompt.
+              </li>
+            </ul>
+          </li>
+          <li>{url} -- url of page</li>
+        </ul>
+
         <form id="form-options">
           <template id="template-prompt">
             <fieldset>

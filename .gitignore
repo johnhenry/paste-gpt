@@ -208,7 +208,10 @@ dist
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+# extension local resources
 extension.crx
 extension.pem
-extension/extension.zip
 extension.zip
+
+# local video explanation
+.video/*

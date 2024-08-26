@@ -90,13 +90,6 @@ url: {url}
     title: "Explain Like I'm Five",
     prompt: `Please explain the following in simple terms that a five-year-old would understand: \n\n ---- \n\nurl: {url}\n\n{content}`,
   },
-
-  {
-    title: "Summarize (simple)",
-    prompt:
-      "Please summarize the following \n\n ---- \n\nurl: {url}\n\n{content}",
-  },
-
   {
     title: "Headlines and Sub Headings (simple)",
     prompt:
@@ -138,7 +131,7 @@ url: {url}
     prompt: "url: {url}\n{content}",
   },
   {
-    title: "Content",
+    title: "Raw Content",
     prompt: "",
   },
 ];
