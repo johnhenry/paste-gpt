@@ -42,6 +42,10 @@ Click "Prompts" to personalize your experience:
 
 \*Note: ChatGPT works out of the box without sign-up. Claude AI requires you to sign in on the browser where you're using Paste GPT. Both services offer premium options with advanced features.
 
+## Publishing
+
+Pack extension with `npm run build` and upload the resulting `.zip` file to the [Chrome Web Store](https://chrome.google.com/webstore/devconsole).
+
 ## Known Issues
 
 ### Claude AI
