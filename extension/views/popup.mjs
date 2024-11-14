@@ -191,3 +191,206 @@ try {
   console.error("There was a problem with the fetch operation:", error);
 }
 SELECT_PROMPTS.dispatchEvent(new Event("change"));
+
+// Download
+const EXTRACT_CONVERSATION_BUTTON = document.getElementById(
+  "extract-conversation"
+);
+let domain;
+chrome.tabs.query({ active: true, currentWindow: true }, function ([tabs]) {
+  domain = new URL(tabs.url).hostname;
+  if (domain !== "chatgpt.com" && domain !== "claude.ai") {
+    domain = undefined;
+  }
+  if (!domain) {
+    EXTRACT_CONVERSATION_BUTTON.style.display = "none";
+  }
+});
+
+EXTRACT_CONVERSATION_BUTTON.addEventListener("click", async () => {
+  try {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+
+    const extractChatGPTConversation = async () => {
+      const turns = Array.from(
+        document.querySelectorAll('[data-testid^="conversation-turn-"]')
+      );
+      const conversation = [];
+
+      for (const turn of turns) {
+        const role =
+          turn
+            .querySelector("h5,h6")
+            ?.textContent.replace(" said:", "")
+            .toLowerCase() || "unknown";
+        const textContent = turn.querySelector(".markdown")?.textContent || "";
+
+        const attachments = await Promise.all(
+          Array.from(turn.querySelectorAll("img")).map(async (img) => {
+            try {
+              const response = await fetch(img.src);
+              const blob = await response.blob();
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () =>
+                  resolve({
+                    type: blob.type,
+                    originalUrl: img.src,
+                    base64: reader.result,
+                    alt: img.alt,
+                    width: img.width,
+                    height: img.height,
+                  });
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              });
+            } catch (error) {
+              console.warn(`Failed to convert attachment to base64: ${error}`);
+              return {
+                type: "unknown",
+                originalUrl: img.src,
+                alt: img.alt,
+                width: img.width,
+                height: img.height,
+                error: "Failed to convert to base64",
+              };
+            }
+          })
+        );
+
+        const codeBlocks = Array.from(turn.querySelectorAll("pre code")).map(
+          (code) => ({
+            language: code.className.replace("hljs language-", ""),
+            code: code.textContent,
+          })
+        );
+
+        conversation.push({
+          role,
+          content: textContent,
+          attachments,
+          codeBlocks,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return conversation;
+    };
+
+    const extractClaudeConversation = async () => {
+      const turns = Array.from(
+        document.querySelectorAll("[data-test-render-count]")
+      );
+      const conversation = [];
+
+      for (const turn of turns) {
+        const userDiv = turn.querySelector('[data-testid="user-message"]');
+        const role = userDiv ? "user" : "assistant";
+
+        let textContent = "";
+        if (role === "user") {
+          textContent = userDiv?.textContent || "";
+        } else {
+          const messageDiv = turn.querySelector(".font-claude-message");
+          textContent = messageDiv?.textContent || "";
+        }
+
+        const attachments = await Promise.all(
+          Array.from(turn.querySelectorAll("img")).map(async (img) => {
+            try {
+              const response = await fetch(img.src);
+              const blob = await response.blob();
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () =>
+                  resolve({
+                    type: blob.type,
+                    originalUrl: img.src,
+                    base64: reader.result,
+                    alt: img.alt,
+                    width: img.width,
+                    height: img.height,
+                  });
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              });
+            } catch (error) {
+              console.warn(`Failed to convert attachment to base64: ${error}`);
+              return {
+                type: "unknown",
+                originalUrl: img.src,
+                alt: img.alt,
+                width: img.width,
+                height: img.height,
+                error: "Failed to convert to base64",
+              };
+            }
+          })
+        );
+
+        const codeBlocks = Array.from(turn.querySelectorAll("pre code")).map(
+          (code) => ({
+            language: code.className.replace("language-", ""),
+            code: code.textContent,
+          })
+        );
+
+        const artifacts = Array.from(
+          turn.querySelectorAll('[data-testid^="artifact-"]')
+        ).map((artifact) => ({
+          id: artifact.dataset.testid.replace("artifact-", ""),
+          type: artifact.dataset.type || "unknown",
+          content: artifact.textContent,
+        }));
+
+        conversation.push({
+          role,
+          content: textContent,
+          attachments,
+          codeBlocks,
+          artifacts,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return conversation;
+    };
+
+    const downloadJSON = (data, filename) => {
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    const extractFunc =
+      domain === "chatgpt.com"
+        ? extractChatGPTConversation
+        : extractClaudeConversation;
+    const filename =
+      domain === "chatgpt.com"
+        ? "chatgpt-conversation.json"
+        : "claude-conversation.json";
+
+    const result = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: extractFunc,
+    });
+
+    const conversation = result[0].result;
+    downloadJSON(conversation, filename);
+  } catch (error) {
+    console.error("Failed to extract conversation:", error);
+    alert(`Failed to extract conversation: ${error.message}`);
+  }
+});

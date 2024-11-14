@@ -116,3 +116,10 @@ main {
   gap: 1rem;
   z-index: 1;
 }
+#extract-conversation {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5rem;
+  cursor: pointer;
+}
