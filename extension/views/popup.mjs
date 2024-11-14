@@ -62,8 +62,9 @@ const solve =
         case "chatgpt":
         default:
           selector.url = "https://chatgpt.com";
-          selector.textbox = "textarea";
-          selector.button = "main form button:only-of-type";
+          selector.textbox = "#prompt-textarea";
+          selector.button =
+            "#composer-background button[data-testid='send-button']";
           break;
       }
 
@@ -109,23 +110,23 @@ const solve =
             if (!prompt || !TEXT_AREA) {
               return;
             }
-            switch (target) {
-              case "claude":
-                TEXT_AREA.textContent = prompt;
-                if (run) {
-                  const button = await waitForSelector(selector.button);
-                  button.click();
-                }
-                break;
-              case "chatgpt":
-              default:
-                TEXT_AREA.value = prompt;
-                TEXT_AREA.dispatchEvent(new Event("input", { bubbles: true }));
-                if (run) {
-                  const button = await waitForSelector(selector.button);
-                  button.click();
-                }
-                break;
+            TEXT_AREA.textContent = prompt;
+            if (run) {
+              const button = await waitForSelector(selector.button);
+              switch (target) {
+                case "claude":
+                  //
+                  break;
+                case "chatgpt":
+                default:
+                  TEXT_AREA.dispatchEvent(
+                    new Event("input", { bubbles: true })
+                  );
+                  await new Promise((resolve) => setTimeout(resolve, 1000));
+                  button.removeAttribute("disabled");
+                  break;
+              }
+              button.click();
             }
           };
           const loaded = async () => {
